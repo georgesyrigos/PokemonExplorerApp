@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F5F5F5">
+
+    <!-- Search Input Bar -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/searchTextInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="Search Pokémon by name..."
+        app:endIconMode="clear_text"
+        app:startIconDrawable="@android:drawable/ic_menu_search"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/searchEditText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="44dp"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/typesScrollView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/searchTextInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_1"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/holo_red_dark"
+                android:padding="10dp"
+                android:text="Fire"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_2"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/holo_blue_dark"
+                android:padding="10dp"
+                android:text="Water"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_3"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/holo_green_light"
+                android:padding="10dp"
+                android:text="Grass"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_4"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/holo_orange_light"
+                android:padding="10dp"
+                android:text="Electric"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_5"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/holo_orange_dark"
+                android:padding="10dp"
+                android:text="Dragon"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_6"
+                android:layout_marginEnd="8dp"
+                android:background="#F85888"
+                android:padding="10dp"
+                android:text="Psychic"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_7"
+                android:layout_marginEnd="8dp"
+                android:background="#705898"
+                android:padding="10dp"
+                android:text="Ghost"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_8"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/black"
+                android:padding="10dp"
+                android:text="Dark"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_9"
+                android:layout_marginEnd="8dp"
+                android:background="#4A4A4A"
+                android:padding="10dp"
+                android:text="Steel"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/type_10"
+                android:background="#C688F0"
+                android:padding="10dp"
+                android:text="Fairy"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Empty State Message -->
+    <TextView
+        android:id="@+id/tvEmptyMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Please select a Pokémon type"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/darker_gray"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/typesScrollView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_weight="1"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pokemonRecycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/typesScrollView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_weight="1"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

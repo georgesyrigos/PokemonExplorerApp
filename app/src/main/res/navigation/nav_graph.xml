@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/pokemonListFragment">
+
+    <!-- Pokemon List Screen -->
+    <fragment
+        android:id="@+id/pokemonListFragment"
+        android:name="com.example.pokemonexplorerapp.PokemonListFragment"
+        android:label="PokemonListFragment">
+
+        <action
+            android:id="@+id/action_pokemonListFragment_to_pokemonDetailsFragment"
+            app:destination="@+id/pokemonDetailsFragment"/>
+    </fragment>
+
+    <!-- Details Screen -->
+    <fragment
+        android:id="@+id/pokemonDetailsFragment"
+        android:name="com.example.pokemonexplorerapp.PokemonDetailsFragment"
+        android:label="Pokemon Details" />
+</navigation>
