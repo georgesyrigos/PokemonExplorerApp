@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.navigation.fragment.findNavController
 import coil.load
 
 
@@ -24,6 +25,13 @@ class PokemonDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+/*
+        val backBtn: ImageView = view.findViewById(R.id.backBtn)
+
+        // Navigate back to the list screen on click
+        backBtn.setOnClickListener {
+            findNavController().navigateUp()
+        }*/
 
         val imgPokemon: ImageView = view.findViewById(R.id.imgDetailPokemon)
         val tvName: TextView = view.findViewById(R.id.tvDetailName)

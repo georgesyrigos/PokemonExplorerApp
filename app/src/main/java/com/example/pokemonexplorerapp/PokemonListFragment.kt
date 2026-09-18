@@ -8,20 +8,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
 
 class PokemonListFragment : Fragment() {
 
     private val TAG = "PokemonListFragment"
+    //private var selectedType: String? = null
+    private val allPokemonList = mutableListOf<Pokemon>()
 
     private lateinit var pokemonAdapter: PokemonAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var tvEmptyMessage: TextView
+    private lateinit var searchEditText : TextInputEditText
 
     private val apiService by lazy { PokeApiService.create() }
 
@@ -39,6 +44,7 @@ class PokemonListFragment : Fragment() {
         tvEmptyMessage = view.findViewById(R.id.tvEmptyMessage)
         recyclerView = view.findViewById(R.id.pokemonRecycler)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        searchEditText = view.findViewById(R.id.searchEditText)
 
         // Initialize adapter with click lambda
         pokemonAdapter = PokemonAdapter(mutableListOf()) { selectedPokemon ->
@@ -46,6 +52,10 @@ class PokemonListFragment : Fragment() {
             openPokemonDetailScreen(selectedPokemon)
         }
         recyclerView.adapter = pokemonAdapter
+
+        searchEditText.doOnTextChanged { text, _, _, _ ->
+            filterPokemon(text.toString())
+        }
 
         //2. Keep empty message visible and RecyclerView hidden initially
         tvEmptyMessage.visibility = View.VISIBLE
@@ -86,13 +96,38 @@ class PokemonListFragment : Fragment() {
                 // Get selected text and trigger local filter
                 val selectedType = (selectedView as TextView).text.toString()
                 Log.d(TAG, "Selected Type: $selectedType")
-
+                //added for back navigation from details
+                //highlightSelectedTypeChip(view, typeTextViewIds, selectedType)
                 fetchPokemonByType(selectedType)
             }
         }
     }
 
 
+    private fun filterPokemon(query: String) {
+        val cleanQuery = query.trim().lowercase()
+
+        if (cleanQuery.isEmpty()) {
+            // Show all items in current category
+            pokemonAdapter.updateList(allPokemonList)
+            tvEmptyMessage.visibility = if (allPokemonList.isEmpty()) View.VISIBLE else View.GONE
+        } else {
+            // Filter master list by name
+            val filteredList = allPokemonList.filter { pokemon ->
+                pokemon.name.lowercase().contains(cleanQuery)
+            }
+
+            pokemonAdapter.updateList(filteredList)
+
+            // Show empty message if query yields no matches
+            if (filteredList.isEmpty()) {
+                tvEmptyMessage.text = "No Pokémon found matching \"$query\""
+                tvEmptyMessage.visibility = View.VISIBLE
+            } else {
+                tvEmptyMessage.visibility = View.GONE
+            }
+        }
+    }
 
     // Filters already loaded items without re-querying the network
     private fun fetchPokemonByType(typeName: String) {
@@ -131,13 +166,17 @@ class PokemonListFragment : Fragment() {
                             id = details.id,
                             name = details.name,
                             type = typeName,
-                            imageUrl = details.sprites.front_default,
+                            imageUrl = details.sprites.front_default ?: "",
                             hp = getStat("hp"),
                             attack = getStat("attack"),
                             defense = getStat("defense")
                         )
                     )
                 }
+
+                // Update master list before giving to adapter
+                allPokemonList.clear()
+                allPokemonList.addAll(typePokemonList)
 
                 pokemonAdapter.updateList(typePokemonList)
 
@@ -157,8 +196,24 @@ class PokemonListFragment : Fragment() {
             R.id.action_pokemonListFragment_to_pokemonDetailsFragment,
             bundle
         )
+    }
 
 
-
+    //added for back navigation from details
+    private fun highlightSelectedTypeChip(
+        rootView: View,
+        chipIds: List<Int>,
+        activeTypeName: String
+    ) {
+        chipIds.forEach { id ->
+            val chip = rootView.findViewById<TextView>(id)
+            if (chip?.text.toString().equals(activeTypeName, ignoreCase = true)) {
+                chip?.alpha = 1.0f
+                chip?.isSelected = true
+            } else {
+                chip?.alpha = 0.4f
+                chip?.isSelected = false
+            }
+        }
     }
 }
