@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 class PokemonListFragment : Fragment() {
 
     private val TAG = "PokemonListFragment"
-    //private var selectedType: String? = null
+    private var typeText: String? = null
     private val allPokemonList = mutableListOf<Pokemon>()
 
     private lateinit var pokemonAdapter: PokemonAdapter
@@ -97,10 +98,24 @@ class PokemonListFragment : Fragment() {
                 val selectedType = (selectedView as TextView).text.toString()
                 Log.d(TAG, "Selected Type: $selectedType")
                 //added for back navigation from details
-                //highlightSelectedTypeChip(view, typeTextViewIds, selectedType)
+                typeText = selectedType
+                highlightSelectedTypeChip(view, typeTextViewIds, selectedType)
                 fetchPokemonByType(selectedType)
             }
         }
+        // Restore state when coming back from Details Screen
+        typeText?.let { type ->
+            // 1. Re-highlight active type chip
+            highlightSelectedTypeChip(view, typeTextViewIds, type)
+
+            // 2. Re-populate adapter from cached master list without network re-query
+            if (allPokemonList.isNotEmpty()) {
+                tvEmptyMessage.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+                pokemonAdapter.updateList(allPokemonList)
+            }
+        }
+
     }
 
 
@@ -133,6 +148,13 @@ class PokemonListFragment : Fragment() {
     private fun fetchPokemonByType(typeName: String) {
         lifecycleScope.launch {
             try {
+                // Immediately clear old items so they don't linger on screen
+                allPokemonList.clear()
+                pokemonAdapter.updateList(allPokemonList)
+
+                // Reset search text box
+                searchEditText.text?.clear()
+
                 // Show grid, hide empty state message
                 tvEmptyMessage.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
@@ -177,8 +199,7 @@ class PokemonListFragment : Fragment() {
                 // Update master list before giving to adapter
                 allPokemonList.clear()
                 allPokemonList.addAll(typePokemonList)
-
-                pokemonAdapter.updateList(typePokemonList)
+                pokemonAdapter.updateList(allPokemonList)
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching type data", e)
