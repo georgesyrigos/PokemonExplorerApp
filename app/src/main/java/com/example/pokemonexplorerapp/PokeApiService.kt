@@ -46,16 +46,16 @@ data class TypePokemonSlot(
 
 data class PokemonEntry(
     val name: String,
-    val url: String // E.g., "https://pokeapi.co/api/v2/pokemon/4/"
+    val url: String
 )
 
 interface PokeApiService {
 
-    // 1. Fetch individual Pokémon by ID
+    // Fetch individual Pokémon by ID
     @GET("pokemon/{id}")
     suspend fun getPokemonById(@Path("id") id: Int): PokemonApiResponse
 
-    // 2. Query strictly by Pokémon type (e.g. "fire", "water", "grass")
+    // Query strictly by Pokémon type
     @GET("type/{type}")
     suspend fun getPokemonByType(@Path("type") type: String): TypeResponse
 

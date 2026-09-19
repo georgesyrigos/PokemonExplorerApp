@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.view.isGone
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,6 +24,9 @@ class PokemonListFragment : Fragment() {
     private val TAG = "PokemonListFragment"
     private var typeText: String? = null
     private val allPokemonList = mutableListOf<Pokemon>()
+    private var formList : List<TypePokemonSlot> = emptyList()
+    private var countedItems = 0
+    private lateinit var loadMoreBtn : Button
 
     private lateinit var pokemonAdapter: PokemonAdapter
     private lateinit var recyclerView: RecyclerView
@@ -41,11 +45,19 @@ class PokemonListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Initialize RecyclerView and Adapter
+        // Initialize RecyclerView and Adapter
         tvEmptyMessage = view.findViewById(R.id.tvEmptyMessage)
         recyclerView = view.findViewById(R.id.pokemonRecycler)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         searchEditText = view.findViewById(R.id.searchEditText)
+
+        // Initialize load more button
+        loadMoreBtn = view.findViewById(R.id.btnLoadMore)
+        loadMoreBtn.setOnClickListener {
+            typeText?.let { type ->
+                loadNewEntries(type)
+            }
+        }
 
         // Initialize adapter with click lambda
         pokemonAdapter = PokemonAdapter(mutableListOf()) { selectedPokemon ->
@@ -58,11 +70,11 @@ class PokemonListFragment : Fragment() {
             filterPokemon(text.toString())
         }
 
-        //2. Keep empty message visible and RecyclerView hidden initially
+        // Keep empty message visible and RecyclerView hidden initially
         tvEmptyMessage.visibility = View.VISIBLE
         recyclerView.visibility = View.GONE
 
-        // 3. Set up Type Chip Click Listeners
+        // Set up Type Chip Click Listeners
         val typeTextViewIds = listOf(
             R.id.type_1,
             R.id.type_2,
@@ -97,7 +109,7 @@ class PokemonListFragment : Fragment() {
                 // Get selected text and trigger local filter
                 val selectedType = (selectedView as TextView).text.toString()
                 Log.d(TAG, "Selected Type: $selectedType")
-                //added for back navigation from details
+                // Added for back navigation from details
                 typeText = selectedType
                 highlightSelectedTypeChip(view, typeTextViewIds, selectedType)
                 fetchPokemonByType(selectedType)
@@ -105,14 +117,23 @@ class PokemonListFragment : Fragment() {
         }
         // Restore state when coming back from Details Screen
         typeText?.let { type ->
-            // 1. Re-highlight active type chip
+            // Re-highlight active type chip
             highlightSelectedTypeChip(view, typeTextViewIds, type)
 
-            // 2. Re-populate adapter from cached master list without network re-query
+            // Re-populate adapter from cached master list without network re-query
             if (allPokemonList.isNotEmpty()) {
                 tvEmptyMessage.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
                 pokemonAdapter.updateList(allPokemonList)
+
+                // Restore 'Load More' button visibility state upon return
+                if (formList.isNotEmpty() && countedItems < formList.size) {
+                    loadMoreBtn.visibility = View.VISIBLE
+                    loadMoreBtn.isEnabled = true
+                    loadMoreBtn.text = "Load More"
+                } else {
+                    loadMoreBtn.visibility = View.GONE
+                }
             }
         }
 
@@ -148,6 +169,7 @@ class PokemonListFragment : Fragment() {
     private fun fetchPokemonByType(typeName: String) {
         lifecycleScope.launch {
             try {
+                countedItems = 0
                 // Immediately clear old items so they don't linger on screen
                 allPokemonList.clear()
                 pokemonAdapter.updateList(allPokemonList)
@@ -164,11 +186,38 @@ class PokemonListFragment : Fragment() {
 
                 val typeResponse = apiService.getPokemonByType(formattedType)
 
-                // Extract the first 10 entries of this specific type
-                val firstTenEntries = typeResponse.pokemon.take(10)
-                val typePokemonList = mutableListOf<Pokemon>()
+                formList = typeResponse.pokemon
+                if (formList.isEmpty()) {
+                    loadMoreBtn.visibility = View.GONE
+                    showNoPokemonAlert("No Pokémon found for $typeName type.")
+                    return@launch
+                }
 
-                for (entry in firstTenEntries) {
+                loadMoreBtn.visibility = View.VISIBLE
+                loadNewEntries(typeName)
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching type data", e)
+            }
+        }
+    }
+
+    //Load pokemon
+    private fun  loadNewEntries(typeName: String){
+        lifecycleScope.launch {
+            try {
+                if(countedItems>=formList.size){
+                    loadMoreBtn.visibility = View.GONE
+                    showNoPokemonAlert("No more Pokémon available for $typeName type.")
+                    return@launch
+                }
+
+                loadMoreBtn.isEnabled = false
+                loadMoreBtn.text = "Loading..."
+
+                val nextTenEnries = formList.drop(countedItems).take(10)
+
+                for (entry in nextTenEnries) {
                     // Extract ID from resource URL string
                     val pokemonId = entry.pokemon.url
                         .trimEnd('/')
@@ -183,7 +232,7 @@ class PokemonListFragment : Fragment() {
                         return details.stats.find { it.stat.name.equals(name, ignoreCase = true) }?.base_stat ?: 0
                     }
 
-                    typePokemonList.add(
+                    allPokemonList.add(
                         Pokemon(
                             id = details.id,
                             name = details.name,
@@ -195,14 +244,21 @@ class PokemonListFragment : Fragment() {
                         )
                     )
                 }
-
-                // Update master list before giving to adapter
-                allPokemonList.clear()
-                allPokemonList.addAll(typePokemonList)
+                countedItems += nextTenEnries.size
                 pokemonAdapter.updateList(allPokemonList)
 
-            } catch (e: Exception) {
-                Log.e(TAG, "Error fetching type data", e)
+                // Hide button if we reached the absolute end of the type list
+                if (countedItems >= formList.size) {
+                    loadMoreBtn.visibility = View.GONE
+                } else {
+                    loadMoreBtn.visibility = View.VISIBLE
+                    loadMoreBtn.isEnabled = true
+                    loadMoreBtn.text = "Load More"
+                }
+            }
+            catch (e: Exception) {
+                loadMoreBtn.isEnabled = true
+                loadMoreBtn.text = "Load More"
             }
         }
     }
@@ -219,8 +275,18 @@ class PokemonListFragment : Fragment() {
         )
     }
 
+    // Show Message bto inform the user about error
+    private fun showNoPokemonAlert(message: String) {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Notice")
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
+    }
 
-    //added for back navigation from details
+
+    // Added for back navigation from details
     private fun highlightSelectedTypeChip(
         rootView: View,
         chipIds: List<Int>,

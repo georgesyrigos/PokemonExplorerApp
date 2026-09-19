@@ -14,13 +14,13 @@ class PokemonAdapter(
     private val onItemClick: (Pokemon) -> Unit
 ): RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder> (){
 
-    // 1. ViewHolder: Holds references to the item views inside item_pokemon_card.xml
+    // Holds references to the item views inside item_pokemon_card.xml
     class PokemonViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val imgPokemon: ImageView = itemView.findViewById(R.id.pokemonImage)
         val tvPokemonName: TextView = itemView.findViewById(R.id.pokemonName)
     }
 
-    // 2. Inflates the layout file (item_pokemon_card.xml) for each grid card
+    // Inflates the layout file for each grid card
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_pokemon_card, parent, false)
@@ -28,7 +28,7 @@ class PokemonAdapter(
     }
 
 
-    // 3. Binds data from a Pokemon item to the TextView and ImageView
+    // Binds data from a Pokemon item to the TextView and ImageView
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
         val pokemon = pokemonList[position]
 
@@ -47,10 +47,10 @@ class PokemonAdapter(
         }
     }
 
-    // 4. Returns total number of items
+    // Returns total number of items
     override fun getItemCount(): Int = pokemonList.size
 
-    // 5. Helper function to refresh data when filtering
+    // Helper function to refresh data when filtering
     fun updateList(newList: List<Pokemon>) {
         pokemonList = newList
         notifyDataSetChanged()

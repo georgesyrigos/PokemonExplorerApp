@@ -59,7 +59,7 @@ class PokemonDetailsFragment : Fragment() {
             tvType.text = "${it.type.replaceFirstChar { char -> char.uppercase() }} Type"
 
 
-            // 3. Load Sprite Image via Coil
+            // Load Sprite Image via Coil
             imgPokemon.load(it.imageUrl) {
                 crossfade(true)
                 placeholder(R.drawable.ic_launcher_foreground)
