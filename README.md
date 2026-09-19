@@ -2,6 +2,7 @@
 
 An Android application built with **Kotlin**, **Jetpack Components**, and **PokeAPI**. The app allows users to explore Pokémon by type categories, perform real-time name searches, view detailed stats, and lazily load additional data with asynchronous pagination.
 
+---
 
 ## Features
 
