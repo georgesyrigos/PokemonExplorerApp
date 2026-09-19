@@ -25,15 +25,13 @@ An Android application built with **Kotlin**, **Jetpack Components**, and **Poke
 
 ---
 
-## Architecture Overview
+## Core Architecture Components
 
-```text
-app/
- ├── data/
- │    ├── api/           # Retrofit Interface & API Service Definition
- │    └── model/         # Data Classes & Parcelable Data Transfer Objects (Pokemon)
- ├── ui/
- │    ├── PokemonListFragment.kt     # Master view with filtering & load-more pagination
- │    ├── PokemonDetailsFragment.kt  # Stat detail view & navigation handling
- │    └── PokemonAdapter.kt          # RecyclerView Adapter for grid rendering
- └── MainActivity.kt                 # Navigation host container
+* **UI Layer (`Fragment` + `RecyclerView`):**
+  * `PokemonListFragment`: Manages category selection, search text input filtering, state restoration, and pagination controls.
+  * `PokemonDetailsFragment`: Renders high-resolution sprites and maps base stats (`HP`, `Attack`, `Defense`, `Speed`) onto progress indicators.
+* **Data Layer (`Model` & `Network`):**
+  * **PokeAPI Service:** Handles Retrofit REST endpoints for fetching type categories and individual Pokémon detail objects asynchronously.
+  * **Local Master Cache (`allPokemonList`):** Holds the current category's active items in memory to allow instant UI restoration when returning from detail screens without redundant network queries.
+* **Navigation Component:**
+  * Handles fragment transitions and safely passes `Parcelable` Pokémon data models across the back-stack.
