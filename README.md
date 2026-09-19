@@ -1,10 +1,10 @@
-# ⚡ Pokémon Explorer Android App
+# Pokémon Explorer Android App
 
 An Android application built with **Kotlin**, **Jetpack Components**, and **PokeAPI**. The app allows users to explore Pokémon by type categories, perform real-time name searches, view detailed stats, and lazily load additional data with asynchronous pagination.
 
 ---
 
-## 📱 Features
+## Features
 
 - **Category Filtering:** Filter Pokémon dynamically by type (Fire, Water, Grass, etc.) with custom visual tab highlights.
 - **Real-Time Search:** Instant filtering of cached Pokémon lists using `TextInputEditText`.
@@ -15,7 +15,7 @@ An Android application built with **Kotlin**, **Jetpack Components**, and **Poke
 
 ---
 
-## 🛠️ Tech Stack & Libraries
+## Tech Stack & Libraries
 
 * **Language:** Kotlin
 * **Architecture:** Single Activity architecture using Jetpack Navigation Component
@@ -26,7 +26,7 @@ An Android application built with **Kotlin**, **Jetpack Components**, and **Poke
 
 ---
 
-## 🧱 Architecture Overview
+## Architecture Overview
 
 ```text
 app/
