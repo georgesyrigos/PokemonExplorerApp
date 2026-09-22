@@ -30,7 +30,7 @@ An Android application built with **Kotlin**, **Jetpack Components**, and **Poke
 
 * **UI Layer (`Fragment` + `RecyclerView`):**
   * `PokemonListFragment`: Manages category selection, search text input filtering, state restoration, and pagination controls.
-  * `PokemonDetailsFragment`: Renders high-resolution sprites and maps base stats (`HP`, `Attack`, `Defense`, `Speed`) onto progress indicators.
+  * `PokemonDetailsFragment`: Renders high-resolution sprites and maps base stats (`HP`, `Attack`, `Defense`) onto progress indicators.
 * **Data Layer (`Model` & `Network`):**
   * **PokeAPI Service:** Handles Retrofit REST endpoints for fetching type categories and individual Pokémon detail objects asynchronously.
   * **Local Master Cache (`allPokemonList`):** Holds the current category's active items in memory to allow instant UI restoration when returning from detail screens without redundant network queries.
