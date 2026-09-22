@@ -147,7 +147,17 @@ class PokemonListFragment : Fragment() {
             // Show all items in current category
             pokemonAdapter.updateList(allPokemonList)
             tvEmptyMessage.visibility = if (allPokemonList.isEmpty()) View.VISIBLE else View.GONE
+
+            if (formList.isNotEmpty() && countedItems < formList.size) {
+                loadMoreBtn.visibility = View.VISIBLE
+                loadMoreBtn.isEnabled = true
+                loadMoreBtn.text = "Load More"
+            } else {
+                loadMoreBtn.visibility = View.GONE
+            }
         } else {
+            loadMoreBtn.visibility = View.GONE
+
             // Filter master list by name
             val filteredList = allPokemonList.filter { pokemon ->
                 pokemon.name.lowercase().contains(cleanQuery)
@@ -198,6 +208,7 @@ class PokemonListFragment : Fragment() {
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching type data", e)
+                showNoPokemonAlert("Failed to load $typeName Pokémon. Please check your internet connection and try again.")
             }
         }
     }
@@ -259,6 +270,7 @@ class PokemonListFragment : Fragment() {
             catch (e: Exception) {
                 loadMoreBtn.isEnabled = true
                 loadMoreBtn.text = "Load More"
+                showNoPokemonAlert("Failed to load additional Pokémon. Please check your network connection.")
             }
         }
     }
